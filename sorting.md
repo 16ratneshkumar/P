@@ -173,3 +173,100 @@ void countSort(int arr[], int n) {
             arr[k++] = i;
 }
 ```
+
+# Radix sort
+```cpp
+#include <iostream>
+using namespace std;
+
+int getMax(int arr[], int n) {
+    int max = arr[0];
+    for (int i = 1; i < n; i++)
+        if (arr[i] > max)
+            max = arr[i];
+    return max;
+}
+
+void countingSort(int arr[], int n, int exp) {
+    int output[100]; // assuming max size 100
+    int count[10] = {0};
+
+    for (int i = 0; i < n; i++)
+        count[(arr[i] / exp) % 10]++;
+
+    for (int i = 1; i < 10; i++)
+        count[i] += count[i - 1];
+
+    for (int i = n - 1; i >= 0; i--) {
+        int digit = (arr[i] / exp) % 10;
+        output[count[digit] - 1] = arr[i];
+        count[digit]--;
+    }
+
+    for (int i = 0; i < n; i++)
+        arr[i] = output[i];
+}
+
+void radixSort(int arr[], int n) {
+    int maxNum = getMax(arr, n);
+    for (int exp = 1; maxNum / exp > 0; exp *= 10)
+        countingSort(arr, n, exp);
+}
+
+int main() {
+    int arr[] = {170, 45, 75, 90, 802, 24, 2, 66};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    radixSort(arr, n);
+
+    cout << "Sorted array (Radix Sort): ";
+    for (int i = 0; i < n; i++)
+        cout << arr[i] << " ";
+    return 0;
+}
+```
+
+# Bucket sort
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+void bucketSort(int arr[], int n) {
+    const int bucketCount = 10;
+    vector<int> buckets[bucketCount];
+
+    int maxVal = arr[0];
+    for (int i = 1; i < n; i++)
+        if (arr[i] > maxVal)
+            maxVal = arr[i];
+
+    // Distribute into buckets
+    for (int i = 0; i < n; i++) {
+        int index = (arr[i] * bucketCount) / (maxVal + 1);
+        buckets[index].push_back(arr[i]);
+    }
+
+    // Sort buckets and merge
+    int idx = 0;
+    for (int i = 0; i < bucketCount; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+        for (int j = 0; j < buckets[i].size(); j++) {
+            arr[idx++] = buckets[i][j];
+        }
+    }
+}
+
+int main() {
+    int arr[] = {29, 25, 3, 49, 9, 37, 21, 43};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    bucketSort(arr, n);
+
+    cout << "Sorted array (Bucket Sort): ";
+    for (int i = 0; i < n; i++)
+        cout << arr[i] << " ";
+    return 0;
+}
+```
